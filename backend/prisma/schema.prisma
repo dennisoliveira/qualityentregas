@@ -11,7 +11,7 @@ model Customer {
   ID               Int      @id @default(autoincrement())
   DataHoraCadastro DateTime @default(now())
   Codigo		       String?
-  Nome			       String?
+  Nome			       String
   CPF_CNPJ	       String?
   CEP			         Int?
   Logradouro       String?

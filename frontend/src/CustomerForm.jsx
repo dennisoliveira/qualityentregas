@@ -17,8 +17,20 @@ const CustomerForm = () => {
   })
 
   const onSubmit = (data) => {
+    console.log('Formulário submetido')
     console.log('Dados enviados:', data)
-    alert('Cliente cadastrado com sucesso!')
+    fetch('http://localhost:3001/customers', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        console.log('retorno do post')
+        console.log(response)
+      })
   }
 
   return (
