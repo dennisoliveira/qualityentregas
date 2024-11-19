@@ -10,6 +10,9 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "nodemonConfig": {
     "watch": [
       "src"
