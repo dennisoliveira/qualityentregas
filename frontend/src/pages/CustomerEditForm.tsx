@@ -1,38 +1,47 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { parse, isDate, format } from 'date-fns'
 import { getCustomerById, updateCustomer } from '../services/customerService'
+import { State, getStates } from '../services/stateService'
+import { LocationData, getLocationByCep } from '../services/cepService'
 
 const schema = yup.object().shape({
   Codigo: yup.string().max(15),
   Nome: yup.string().max(150).required('Nome é obrigatório'),
   CPF_CNPJ: yup.string().max(20),
-  CEP: yup.string().max(8),
+  CEP: yup.string().min(8).max(8),
   Endereco: yup.string().max(120),
   Numero: yup.string().max(20),
   Bairro: yup.string().max(50),
   Cidade: yup.string().max(60),
-  UF: yup.string().max(2),
+  UF: yup.string().max(2).required('Estado é obrigatório'),
   Complemento: yup.string().max(150),
   Fone: yup.string().max(15),
-  LimiteCredito: yup.number(),
-  Validade: yup.date().transform((value, originalValue) => {
-    const parsedDate = isDate(originalValue)
-      ? originalValue
-      : parse(originalValue, 'dd/MM/yyyy', new Date())
-    return parsedDate
-  }),
+  LimiteCredito: yup
+    .number()
+    .typeError('O Limite de crédito precisa ser um valor válido'),
+  Validade: yup
+    .date()
+    .typeError('A Validade precisa ser uma data válida')
+    .transform((value, originalValue) => {
+      const parsedDate = isDate(originalValue)
+        ? originalValue
+        : parse(originalValue, 'dd/MM/yyyy', new Date())
+      return parsedDate
+    }),
 })
 
 const CustomerEditForm = () => {
+  const [states, setStates] = useState<State[]>([])
   const { id } = useParams()
   const navigate = useNavigate()
   const {
     register,
     handleSubmit,
+    watch,
     reset,
     formState: { errors },
   } = useForm({
@@ -40,10 +49,7 @@ const CustomerEditForm = () => {
   })
 
   const onSubmit = async (data: any) => {
-    console.log('Formulário de atualização submetido')
-    console.log('Dados enviados:', data)
-    const customer = await updateCustomer(data.ID, data)
-    console.log('Dados recebidos:', customer)
+    await updateCustomer(data.ID, data)
     navigate('/')
   }
 
@@ -52,8 +58,23 @@ const CustomerEditForm = () => {
     navigate('/')
   }
 
+  const handleCepBlur = async () => {
+    const { CEP } = watch()
+    if (!CEP) return
+    const locationData: LocationData = await getLocationByCep(CEP)
+    reset({
+      ...watch(),
+      Endereco: locationData.logradouro,
+      Bairro: locationData.bairro,
+      Cidade: locationData.localidade,
+      UF: locationData.uf,
+    })
+  }
+
   useEffect(() => {
     ;(async () => {
+      const states = await getStates()
+      setStates(states)
       const customer = await getCustomerById(Number(id))
       customer.Validade = format(customer.Validade, 'dd/MM/yyyy')
       reset(customer)
@@ -97,6 +118,7 @@ const CustomerEditForm = () => {
             type="text"
             className="w-full border px-4 py-2 rounded"
             {...register('CEP')}
+            onBlur={handleCepBlur}
           />
           <p>{errors.CEP?.message}</p>
         </div>
@@ -142,7 +164,14 @@ const CustomerEditForm = () => {
             className="w-full border px-4 py-2 rounded"
             {...register('UF')}
           >
-            <option value="SP">SP</option>
+            <option value="" defaultValue={''}>
+              --
+            </option>
+            {states.map((state) => (
+              <option key={state.Sigla} value={state.Sigla}>
+                {state.Nome}
+              </option>
+            ))}
           </select>
           <p>{errors.UF?.message}</p>
         </div>

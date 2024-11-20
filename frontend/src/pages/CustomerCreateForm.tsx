@@ -17,16 +17,21 @@ const schema = yup.object().shape({
   Numero: yup.string().max(20),
   Bairro: yup.string().max(50),
   Cidade: yup.string().max(60),
-  UF: yup.string().max(2),
+  UF: yup.string().max(2).required('Estado é obrigatório'),
   Complemento: yup.string().max(150),
   Fone: yup.string().max(15),
-  LimiteCredito: yup.number(),
-  Validade: yup.date().transform((value, originalValue) => {
-    const parsedDate = isDate(originalValue)
-      ? originalValue
-      : parse(originalValue, 'dd/MM/yyyy', new Date())
-    return parsedDate
-  }),
+  LimiteCredito: yup
+    .number()
+    .typeError('O Limite de crédito precisa ser um valor válido'),
+  Validade: yup
+    .date()
+    .typeError('A Validade precisa ser uma data válida')
+    .transform((value, originalValue) => {
+      const parsedDate = isDate(originalValue)
+        ? originalValue
+        : parse(originalValue, 'dd/MM/yyyy', new Date())
+      return parsedDate
+    }),
 })
 
 const CustomerForm = () => {
@@ -43,24 +48,20 @@ const CustomerForm = () => {
   })
 
   const onSubmit = async (data: any) => {
-    console.log('Formulário submetido')
-    console.log('Dados enviados:', data)
-    const customer = await createCustomer(data)
-    console.log('Dados recebidos:', customer)
+    await createCustomer(data)
     navigate('/')
   }
 
   const handleCepBlur = async () => {
-    console.log('perdeu o foco do cep')
-    console.log(watch())
     const { CEP } = watch()
     if (!CEP) return
-    const locationData:LocationData = await getLocationByCep(CEP)
-    console.log(locationData)
+    const locationData: LocationData = await getLocationByCep(CEP)
     reset({
+      ...watch(),
       Endereco: locationData.logradouro,
       Bairro: locationData.bairro,
-      Cidade: locationData.localidade
+      Cidade: locationData.localidade,
+      UF: locationData.uf,
     })
   }
 
@@ -154,6 +155,9 @@ const CustomerForm = () => {
             className="w-full border px-4 py-2 rounded"
             {...register('UF')}
           >
+            <option value="" defaultValue={''}>
+              --
+            </option>
             {states.map((state) => (
               <option key={state.Sigla} value={state.Sigla}>
                 {state.Nome}
