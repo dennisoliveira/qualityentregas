@@ -11,11 +11,36 @@ export const createCustomer = async (req: Request, res: Response) => {
 }
 
 export const getCustomers = async (req: Request, res: Response) => {
-  try {
-    const customers = await customerService.getCustomers()
-    res.status(200).json(customers)
-  } catch (error: any) {
-    res.status(500).json({ message: error.message })
+  const { codigo, nome, cidade, cep } = req.query
+
+  if (Object.keys(req.query).length === 0) {
+    try {
+      const customers = await customerService.getCustomers()
+      res.status(200).json(customers)
+    } catch (error: any) {
+      res.status(500).json({ message: error.message })
+    }
+  }
+
+  if (codigo || nome || cidade || cep) {
+    const filters = {
+      codigo: codigo?.toString(),
+      nome: nome?.toString(),
+      cidade: cidade?.toString(),
+      cep: cep?.toString(),
+    }
+    try {
+      const customers = await customerService.getCustomersByFilters(filters)
+      res.status(200).json(customers)
+    } catch (error: any) {
+      res.status(500).json({ message: error.message })
+    }
+  } else {
+    res
+      .status(400)
+      .json({
+        error: 'Parametros informados não são validos para essa consulta',
+      })
   }
 }
 

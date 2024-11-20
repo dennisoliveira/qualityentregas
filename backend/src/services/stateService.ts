@@ -5,5 +5,5 @@ export const getStates = async (): Promise<any> => {
 }
 
 export default {
-  getStates
+  getStates,
 }
