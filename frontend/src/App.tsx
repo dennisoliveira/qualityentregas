@@ -9,7 +9,7 @@ const App = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto">
         <Routes>
           <Route path="/" element={<CustomerList />} />
           <Route path="/cadastro" element={<CustomerForm />} />

@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { ToastContainer, toast } from 'react-toastify'
 import CollapseBox from '../components/CollapseBox'
@@ -10,9 +13,24 @@ import {
   deleteCustomerById,
 } from '../services/customerService'
 
+const schema = yup.object().shape({
+  Codigo: yup.string().max(15),
+  Nome: yup.string().max(150),
+})
+
 const CustomerList = () => {
   const navigate = useNavigate()
   const [customers, setCustomers] = useState<Customer[]>([])
+
+  const {
+    register,
+    handleSubmit,
+    //watch,
+    //reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  })
 
   const notify = () =>
     toast.success('Cliente removido com sucesso!', { autoClose: 1800 })
@@ -39,40 +57,44 @@ const CustomerList = () => {
     <div className="container mx-auto p-4">
       <ToastContainer />
       <CollapseBox title="Filtrar clientes">
-      <div className="flex flex-col gap-4">
-          {/* Campo Nome */}
-          <div>
-            <label
-              htmlFor="nome"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Nome
-            </label>
-            <input
-              type="text"
-              id="nome"
-              name="nome"
-              placeholder="Filtrar por nome"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-          </div>
-
-          {/* Campo Código */}
-          <div>
-            <label
-              htmlFor="codigo"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Código
-            </label>
-            <input
-              type="text"
-              id="codigo"
-              name="codigo"
-              placeholder="Filtrar por código"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-          </div>
+        <div className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit((data) => console.log(data))}>
+            <div>
+              <label className="block mb-1 font-bold">Código:</label>
+              <input
+                type="text"
+                placeholder="Filtrar por código"
+                className="w-full border px-4 py-2 rounded"
+                {...register('Codigo')}
+              />
+              <p>{errors.Codigo?.message}</p>
+            </div>
+            <div>
+              <label className="block mb-1 font-bold">Nome:</label>
+              <input
+                type="text"
+                placeholder="Filtrar por nome"
+                className="w-full border px-4 py-2 rounded"
+                {...register('Nome')}
+              />
+              <p>{errors.Nome?.message}</p>
+            </div>
+            <br />
+            <div className="flex space-x-4">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Filtrar
+              </button>
+              <button
+                onClick={() => console.log('limpar filtro')}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+                Limpar filtros
+              </button>
+            </div>
+          </form>
         </div>
       </CollapseBox>
       <br />

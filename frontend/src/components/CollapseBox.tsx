@@ -14,7 +14,7 @@ const CollapseBox: React.FC<CollapseBoxProps> = ({ title, children }) => {
     <div className="w-full mx-auto my-4 shadow-md">
       <button
         onClick={toggleCollapse}
-        className="w-full px-4 py-2 text-left bg-gray-500 text-white font-bold flex items-center justify-between"
+        className="w-full px-4 py-2 text-left bg-gray-800 text-white font-bold flex items-center justify-between"
       >
         <span>{title}</span>
         <span>{isOpen ? '-' : '+'}</span>
