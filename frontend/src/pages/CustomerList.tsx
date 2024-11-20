@@ -13,7 +13,8 @@ const CustomerList = () => {
   const navigate = useNavigate()
   const [customers, setCustomers] = useState<Customer[]>([])
 
-  const notify = () => toast.success('Cliente removido com sucesso!')
+  const notify = () =>
+    toast.success('Cliente removido com sucesso!', { autoClose: 1800 })
 
   useEffect(() => {
     ;(async () => {

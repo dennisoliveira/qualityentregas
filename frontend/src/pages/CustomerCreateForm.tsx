@@ -49,7 +49,8 @@ const CustomerForm = () => {
     resolver: yupResolver(schema),
   })
 
-  const notify = () => toast.success('Dados do cliente salvo com sucesso')
+  const notify = () =>
+    toast.success('Dados do cliente salvo com sucesso', { autoClose: 1800 })
 
   const onSubmit = async (data: any) => {
     await createCustomer(data)
