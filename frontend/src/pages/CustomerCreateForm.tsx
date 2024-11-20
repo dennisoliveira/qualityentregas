@@ -1,15 +1,18 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { parse, isDate } from 'date-fns'
 import { createCustomer } from '../services/customerService'
+import { State, getStates } from '../services/stateService'
+import { LocationData, getLocationByCep } from '../services/cepService'
 
 const schema = yup.object().shape({
   Codigo: yup.string().max(15),
   Nome: yup.string().max(150).required('Nome é obrigatório'),
   CPF_CNPJ: yup.string().max(20),
-  CEP: yup.string().max(8),
+  CEP: yup.string().min(8).max(8),
   Logradouro: yup.string().max(100),
   Endereco: yup.string().max(120),
   Numero: yup.string().max(20),
@@ -28,10 +31,13 @@ const schema = yup.object().shape({
 })
 
 const CustomerForm = () => {
+  const [states, setStates] = useState<State[]>([])
   const navigate = useNavigate()
   const {
     register,
     handleSubmit,
+    watch,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -44,6 +50,28 @@ const CustomerForm = () => {
     console.log('Dados recebidos:', customer)
     navigate('/')
   }
+
+  const handleCepBlur = async () => {
+    console.log('perdeu o foco do cep')
+    console.log(watch())
+    const { CEP } = watch()
+    if (!CEP) return
+    const locationData:LocationData = await getLocationByCep(CEP)
+    console.log(locationData)
+    reset({
+      Logradouro: locationData.logradouro,
+      Endereco: locationData.logradouro,
+      Bairro: locationData.bairro,
+      Cidade: locationData.localidade
+    })
+  }
+
+  useEffect(() => {
+    ;(async () => {
+      const states = await getStates()
+      setStates(states)
+    })()
+  }, [])
 
   return (
     <div className="container mx-auto p-4">
@@ -82,6 +110,7 @@ const CustomerForm = () => {
             type="text"
             className="w-full border px-4 py-2 rounded"
             {...register('CEP')}
+            onBlur={handleCepBlur}
           />
           <p>{errors.CEP?.message}</p>
         </div>
@@ -136,7 +165,11 @@ const CustomerForm = () => {
             className="w-full border px-4 py-2 rounded"
             {...register('UF')}
           >
-            <option value="SP">SP</option>
+            {states.map((state) => (
+              <option key={state.Sigla} value={state.Sigla}>
+                {state.Nome}
+              </option>
+            ))}
           </select>
           <p>{errors.UF?.message}</p>
         </div>
