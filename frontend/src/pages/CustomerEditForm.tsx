@@ -11,7 +11,6 @@ const schema = yup.object().shape({
   Nome: yup.string().max(150).required('Nome é obrigatório'),
   CPF_CNPJ: yup.string().max(20),
   CEP: yup.string().max(8),
-  Logradouro: yup.string().max(100),
   Endereco: yup.string().max(120),
   Numero: yup.string().max(20),
   Bairro: yup.string().max(50),
@@ -100,15 +99,6 @@ const CustomerEditForm = () => {
             {...register('CEP')}
           />
           <p>{errors.CEP?.message}</p>
-        </div>
-        <div>
-          <label className="block mb-1 font-bold">Logradouro:</label>
-          <input
-            type="text"
-            className="w-full border px-4 py-2 rounded"
-            {...register('Logradouro')}
-          />
-          <p>{errors.Logradouro?.message}</p>
         </div>
         <div>
           <label className="block mb-1 font-bold">Endereco:</label>

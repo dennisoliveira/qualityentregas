@@ -14,7 +14,6 @@ model Customer {
   Nome			       String
   CPF_CNPJ	       String?
   CEP			         String?
-  Logradouro       String?
   Endereco		     String?
   Numero		       String?
   Bairro			     String?

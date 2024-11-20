@@ -5,7 +5,6 @@ export interface Customer {
   Nome: string
   CPF_CNPJ: string
   CEP: number
-  Logradouro: string
   Endereco: string
   Numero: string
   Bairro: string
