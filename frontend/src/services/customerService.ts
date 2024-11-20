@@ -49,3 +49,16 @@ export const getCustomers = async (): Promise<any> => {
     console.log(error)
   }
 }
+
+export const deleteCustomerById = async (id: number): Promise<any> => {
+  try {
+    const response = await fetch(`http://localhost:3001/customers/${id}`, {
+      method: 'DELETE'
+    })
+    if (!response.ok) {
+      throw new Error(`Erro na requisição: ${response.status}`)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}

@@ -1,24 +1,27 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
-import { Customer, getCustomers } from '../services/customerService'
+import { Customer, getCustomers, deleteCustomerById } from '../services/customerService'
 
 const CustomerList = () => {
   const navigate = useNavigate()
   const [customers, setCustomers] = useState<Customer[]>([])
 
   useEffect(() => {
-    getCustomers().then((response) => {
-      setCustomers(response)
-    })
+    (async () => {
+      const customers = await getCustomers()
+      setCustomers(customers)
+    })()
   }, [])
 
   const editCustomer = (id: number) => {
     navigate(`/editar/${id}`)
   }
 
-  const deleteCustomer = (id: number) => {
-    console.log(`Deletar customer com id ${id}`)
+  const deleteCustomer = async (id: number) => {
+    await deleteCustomerById(id)
+    const customers = await getCustomers()
+    setCustomers(customers)
   }
 
   return (
