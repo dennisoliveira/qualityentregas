@@ -4,7 +4,7 @@ import {
   getCustomers,
   getCustomersById,
   updateCustomersById,
-  deleteCustomersById
+  deleteCustomersById,
 } from '../controllers/customerController'
 
 const router = Router()
