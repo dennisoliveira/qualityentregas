@@ -50,12 +50,14 @@ const CustomerForm = () => {
           <p>{errors.Nome?.message}</p>
         </div>
         <br />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Cadastrar Cliente
-        </button>
+        <div className="flex space-x-4">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Cadastrar Cliente
+          </button>
+        </div>
       </form>
     </div>
   )

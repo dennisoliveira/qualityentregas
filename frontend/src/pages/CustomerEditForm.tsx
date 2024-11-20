@@ -1,8 +1,9 @@
-import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { createCustomer } from '../services/customerService'
+import { getCustomerById, updateCustomer} from '../services/customerService'
 
 const schema = yup.object().shape({
   Codigo: yup.string().max(150),
@@ -10,22 +11,31 @@ const schema = yup.object().shape({
 })
 
 const CustomerEditForm = () => {
+  const { id } = useParams()
   const navigate = useNavigate()
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   })
 
   const onSubmit = async (data: any) => {
-    console.log('Formulário submetido')
+    console.log('Formulário de atualização submetido')
     console.log('Dados enviados:', data)
-    const customer = await createCustomer(data)
+    const customer = await updateCustomer(data.ID, data)
     console.log('Dados recebidos:', customer)
     navigate('/')
   }
+
+  useEffect(() => {
+    (async () => {
+      const customer = await getCustomerById(Number(id))
+      reset(customer)
+    })()
+  }, [id, reset])
 
   return (
     <div className="container mx-auto p-4">
@@ -50,12 +60,20 @@ const CustomerEditForm = () => {
           <p>{errors.Nome?.message}</p>
         </div>
         <br />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Salvar alterações
-        </button>
+        <div className="flex space-x-4">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Salvar alterações
+          </button>
+          <button
+            onClick={() => navigate('/')}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Cancelar
+          </button>
+        </div>
       </form>
     </div>
   )

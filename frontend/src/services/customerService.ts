@@ -50,6 +50,39 @@ export const getCustomers = async (): Promise<any> => {
   }
 }
 
+export const getCustomerById = async (id: number): Promise<any> => {
+  try {
+    const response = await fetch(`http://localhost:3001/customers/${id}`)
+    if (!response.ok) {
+      throw new Error(`Erro na requisição: ${response.status}`)
+    }
+    const customer = await response.json()
+    return customer
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const updateCustomer = async (id: number, data: Customer): Promise<any> => {
+  try {
+    const response = await fetch(`http://localhost:3001/customers/${id}`, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    if (!response.ok) {
+      throw new Error(`Erro na requisição: ${response.status}`)
+    }
+
+    const customer = await response.json()
+    return customer
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const deleteCustomerById = async (id: number): Promise<any> => {
   try {
     const response = await fetch(`http://localhost:3001/customers/${id}`, {
