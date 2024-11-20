@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { getCustomerById, updateCustomer} from '../services/customerService'
+import { getCustomerById, updateCustomer } from '../services/customerService'
 
 const schema = yup.object().shape({
   Codigo: yup.string().max(150),
@@ -30,8 +30,13 @@ const CustomerEditForm = () => {
     navigate('/')
   }
 
+  const cancelUpdate = (event: any) => {
+    event.preventDefault()
+    navigate('/')
+  }
+
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       const customer = await getCustomerById(Number(id))
       reset(customer)
     })()
@@ -68,7 +73,7 @@ const CustomerEditForm = () => {
             Salvar alterações
           </button>
           <button
-            onClick={() => navigate('/')}
+            onClick={cancelUpdate}
             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
           >
             Cancelar

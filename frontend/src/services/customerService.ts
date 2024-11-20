@@ -63,7 +63,10 @@ export const getCustomerById = async (id: number): Promise<any> => {
   }
 }
 
-export const updateCustomer = async (id: number, data: Customer): Promise<any> => {
+export const updateCustomer = async (
+  id: number,
+  data: Customer,
+): Promise<any> => {
   try {
     const response = await fetch(`http://localhost:3001/customers/${id}`, {
       method: 'PUT',
@@ -86,7 +89,7 @@ export const updateCustomer = async (id: number, data: Customer): Promise<any> =
 export const deleteCustomerById = async (id: number): Promise<any> => {
   try {
     const response = await fetch(`http://localhost:3001/customers/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     })
     if (!response.ok) {
       throw new Error(`Erro na requisição: ${response.status}`)
