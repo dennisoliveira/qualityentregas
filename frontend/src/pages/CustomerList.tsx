@@ -9,13 +9,17 @@ import CollapseBox from '../components/CollapseBox'
 import 'react-toastify/dist/ReactToastify.css'
 import {
   Customer,
+  Filters,
   getCustomers,
+  getCustomersByFilters,
   deleteCustomerById,
 } from '../services/customerService'
 
 const schema = yup.object().shape({
   Codigo: yup.string().max(15),
   Nome: yup.string().max(150),
+  Cidade: yup.string().max(150),
+  CEP: yup.string().max(150),
 })
 
 const CustomerList = () => {
@@ -25,8 +29,7 @@ const CustomerList = () => {
   const {
     register,
     handleSubmit,
-    //watch,
-    //reset,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -53,32 +56,78 @@ const CustomerList = () => {
     notify()
   }
 
+  const filterCustomers = async (data: any) => {
+    const filters: Filters = {
+      codigo: data.Codigo,
+      nome: data.Nome,
+      cidade: data.Cidade,
+      cep: data.CEP,
+    }
+    const filteredCustomers = await getCustomersByFilters(filters)
+    setCustomers(filteredCustomers)
+  }
+
+  const clearFilters = async (event: any) => {
+    event.preventDefault()
+    reset({
+      Codigo: '',
+      Nome: '',
+      Cidade: '',
+      CEP: '',
+    })
+    const customers = await getCustomers()
+    setCustomers(customers)
+  }
+
   return (
     <div className="container mx-auto p-4">
       <ToastContainer />
       <CollapseBox title="Filtrar clientes">
-        <div className="flex flex-col gap-4">
-          <form onSubmit={handleSubmit((data) => console.log(data))}>
-            <div>
-              <label className="block mb-1 font-bold">Código:</label>
-              <input
-                type="text"
-                placeholder="Filtrar por código"
-                className="w-full border px-4 py-2 rounded"
-                {...register('Codigo')}
-              />
-              <p>{errors.Codigo?.message}</p>
+        <div>
+          <form onSubmit={handleSubmit(filterCustomers)}>
+            <div className="flex space-x-4">
+              <div>
+                <label className="block mb-1 font-bold">Código:</label>
+                <input
+                  type="text"
+                  placeholder="Filtrar por código"
+                  className="w-full border px-4 py-2 rounded"
+                  {...register('Codigo')}
+                />
+                <p>{errors.Codigo?.message}</p>
+              </div>
+              <div>
+                <label className="block mb-1 font-bold">Nome:</label>
+                <input
+                  type="text"
+                  placeholder="Filtrar por nome"
+                  className="w-full border px-4 py-2 rounded"
+                  {...register('Nome')}
+                />
+                <p>{errors.Nome?.message}</p>
+              </div>
+              <div>
+                <label className="block mb-1 font-bold">Cidade:</label>
+                <input
+                  type="text"
+                  placeholder="Filtrar por Cidade"
+                  className="w-full border px-4 py-2 rounded"
+                  {...register('Cidade')}
+                />
+                <p>{errors.Nome?.message}</p>
+              </div>
+              <div>
+                <label className="block mb-1 font-bold">CEP:</label>
+                <input
+                  type="text"
+                  placeholder="Filtrar por CEP"
+                  className="w-full border px-4 py-2 rounded"
+                  {...register('CEP')}
+                />
+                <p>{errors.Nome?.message}</p>
+              </div>
             </div>
-            <div>
-              <label className="block mb-1 font-bold">Nome:</label>
-              <input
-                type="text"
-                placeholder="Filtrar por nome"
-                className="w-full border px-4 py-2 rounded"
-                {...register('Nome')}
-              />
-              <p>{errors.Nome?.message}</p>
-            </div>
+
             <br />
             <div className="flex space-x-4">
               <button
@@ -88,7 +137,7 @@ const CustomerList = () => {
                 Filtrar
               </button>
               <button
-                onClick={() => console.log('limpar filtro')}
+                onClick={clearFilters}
                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
               >
                 Limpar filtros

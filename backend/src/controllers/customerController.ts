@@ -20,9 +20,7 @@ export const getCustomers = async (req: Request, res: Response) => {
     } catch (error: any) {
       res.status(500).json({ message: error.message })
     }
-  }
-
-  if (codigo || nome || cidade || cep) {
+  } else if (codigo || nome || cidade || cep) {
     const filters = {
       codigo: codigo?.toString(),
       nome: nome?.toString(),

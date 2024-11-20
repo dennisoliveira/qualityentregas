@@ -16,6 +16,13 @@ export interface Customer {
   Validade: Date
 }
 
+export interface Filters {
+  codigo?: string
+  nome?: string
+  cidade?: string
+  cep?: string
+}
+
 export const createCustomer = async (data: Customer): Promise<any> => {
   try {
     const response = await fetch('http://localhost:3001/customers', {
@@ -39,6 +46,27 @@ export const createCustomer = async (data: Customer): Promise<any> => {
 export const getCustomers = async (): Promise<any> => {
   try {
     const response = await fetch('http://localhost:3001/customers')
+    if (!response.ok) {
+      throw new Error(`Erro na requisição: ${response.status}`)
+    }
+    const customers = await response.json()
+    return customers
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const getCustomersByFilters = async (filters: Filters): Promise<any> => {
+  const searchParams = {
+    ...(filters.codigo && { codigo: filters.codigo }),
+    ...(filters.nome && { nome: filters.nome }),
+    ...(filters.cidade && { cidade: filters.cidade }),
+    ...(filters.cep && { cep: filters.cep }),
+  }
+  const queryString = new URLSearchParams(searchParams).toString()
+  const queryURL = `http://localhost:3001/customers?${queryString}`
+  try {
+    const response = await fetch(queryURL)
     if (!response.ok) {
       throw new Error(`Erro na requisição: ${response.status}`)
     }
