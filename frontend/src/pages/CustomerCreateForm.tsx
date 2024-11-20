@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { parse, isDate } from 'date-fns'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { createCustomer } from '../services/customerService'
 import { State, getStates } from '../services/stateService'
 import { LocationData, getLocationByCep } from '../services/cepService'
@@ -47,9 +49,14 @@ const CustomerForm = () => {
     resolver: yupResolver(schema),
   })
 
+  const notify = () => toast.success('Dados do cliente salvo com sucesso')
+
   const onSubmit = async (data: any) => {
     await createCustomer(data)
-    navigate('/')
+    notify()
+    setTimeout(() => {
+      navigate('/')
+    }, 1000)
   }
 
   const handleCepBlur = async () => {
@@ -74,6 +81,7 @@ const CustomerForm = () => {
 
   return (
     <div className="container mx-auto p-4">
+      <ToastContainer />
       <h1 className="text-2xl font-bold mb-4">Cadastrar Cliente</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>

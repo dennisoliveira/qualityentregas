@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import {
   Customer,
   getCustomers,
@@ -10,6 +12,8 @@ import {
 const CustomerList = () => {
   const navigate = useNavigate()
   const [customers, setCustomers] = useState<Customer[]>([])
+
+  const notify = () => toast.success('Cliente removido com sucesso!')
 
   useEffect(() => {
     ;(async () => {
@@ -26,10 +30,12 @@ const CustomerList = () => {
     await deleteCustomerById(id)
     const customers = await getCustomers()
     setCustomers(customers)
+    notify()
   }
 
   return (
     <div className="container mx-auto p-4">
+      <ToastContainer />
       <h1 className="text-2xl font-bold mb-4">Lista de Clientes</h1>
       <table className="table-auto w-full border-collapse border border-gray-200">
         <thead>
