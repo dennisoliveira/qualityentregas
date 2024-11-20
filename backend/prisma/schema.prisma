@@ -13,7 +13,7 @@ model Customer {
   Codigo		       String?
   Nome			       String
   CPF_CNPJ	       String?
-  CEP			         Int?
+  CEP			         String?
   Logradouro       String?
   Endereco		     String?
   Numero		       String?
